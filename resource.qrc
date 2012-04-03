@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/view-fullscreen.svg</file>
+        <file>images/zoom-fit-best.svg</file>
+        <file>images/icon.png</file>
+        <file>images/go-next.png</file>
+        <file>images/go-previous.png</file>
+        <file>images/window-close.png</file>
+        <file>images/Gnome-object-rotate-left.svg</file>
+        <file>images/Gnome-object-rotate-right.svg</file>
+        <file>images/list-add.png</file>
+        <file>images/document-open.png</file>
+        <file>images/folder-open.png</file>
+        <file>images/stock_form-listbox.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>taxonomy.txt</file>
+    </qresource>
+</RCC>

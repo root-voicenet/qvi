@@ -1,0 +1,8 @@
+Tematicheskiy	1
+  Nauka	2
+  Isskustvo	3
+  Kultura	4
+Geographicheskiy	5
+  Baikal	6
+  Goroda	7
+
