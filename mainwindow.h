@@ -6,6 +6,7 @@
 #include <QProgressDialog>
 #include "loadfolderthread.h"
 #include "pointermodel.h"
+#include "connector.h"
 
 namespace Ui
 {
@@ -29,6 +30,8 @@ public:
 
     QProgressDialog progress;
     LoadFolderThread loadFolderThread;
+    Connector *m_site;
+
     void scaleImage();
     void draw();
     void populateList();

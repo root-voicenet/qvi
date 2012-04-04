@@ -7,7 +7,7 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindowClass)
+    : QMainWindow(parent), ui(new Ui::MainWindowClass), m_site(NULL)
 {
     angle = 0;
     ui->setupUi(this);
@@ -24,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->pointer->setModel(&pointerModel);
 
+    m_site = new Connector("http://test.irkipedia.ru/api");
+    m_site->Login("admin", "alcd7c9");
+
     ui->imageLabel->addMenuItem(ui->actionFit_to_screen);
     ui->imageLabel->addMenuItem(ui->actionFullscreen);
     ui->imageLabel->addMenuItem(ui->actionHide_Listbox);
@@ -39,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if(m_site) delete m_site;
     delete ui;
 }
 
