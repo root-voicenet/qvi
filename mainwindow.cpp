@@ -22,9 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
     pointerModel.init(str.split("\n"));
     file.close();
 
-    ui->pointer->setModel(&pointerModel);
 
     m_site = new Connector("http://test.irkipedia.ru/api");
+    connect(m_site, SIGNAL(pointersLoaded()), this, SLOT(pointerLoaded()));
     m_site->Login("admin", "alcd7c9");
 
     ui->imageLabel->addMenuItem(ui->actionFit_to_screen);
@@ -232,4 +232,9 @@ void MainWindow::on_actionRotate_Counter_Clockwise_triggered()
     else
         angle -= 90;
     draw();
+}
+
+void MainWindow::pointerLoaded()
+{
+    ui->pointer->setModel(&(m_site->getPointers()));
 }

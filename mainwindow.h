@@ -58,6 +58,7 @@ private slots:
     void addImageItem(QString);
     void setupProgressDialog(int);
     void updateProgressDialog();
+    void pointerLoaded();
 };
 
 #endif // MAINWINDOW_H

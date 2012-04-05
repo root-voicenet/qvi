@@ -194,7 +194,7 @@ int Client::request( QList<Variant> params, QString methodName )
         header.setValue("Cookie", d->cookie );
     }
 
-    //header.setValue("Connection", "close");
+    header.setValue("Connection", "close");
 
     header.setValue("host",d->hostName);
 
@@ -205,10 +205,10 @@ int Client::request( QList<Variant> params, QString methodName )
     d->methodNames[id] = methodName;
     d->http->close();
 
-//#ifdef XMLRPC_DEBUG
+#ifdef XMLRPC_DEBUG
     qDebug() << "xmlrpc request(" << id << "): " << methodName;
     qDebug() << Variant(params).pprint();
-//#endif
+#endif
 
     return id;
 }
@@ -295,8 +295,6 @@ void Client::requestFinished(int id, bool error)
     if ( d->serverResponses.count(id) ) {
         QBuffer *buffer = d->serverResponses.take(id);
         QByteArray buf = buffer->buffer();
-
-        //qDebug() << "xml-rpc server response:\n" << QString(buf);
 
         Response response;
 

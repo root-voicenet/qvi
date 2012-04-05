@@ -34,48 +34,84 @@ void Connector::connectService()
 
 
 void Connector::Login(const QString& username, const QString& password) {
-   //if(!m_isConnected)
-   //    connectService();
 
     //int requestID = m_client.request(METHOD_USER_LOGIN, username, password);
-   // m_requests.insert(requestID, METHOD_USER_LOGIN);
+    //addRequest(requestID, METHOD_USER_LOGIN);
 
-    getPointers();
+    int requestID = m_client.request(METHOD_TAXONOMY_GETTREE, 6);
+    addRequest(requestID, METHOD_TAXONOMY_GETTREE);
 }
 
-void Connector::getPointers()
+void Connector::addRequest(int requestID, const QString& method)
 {
-    int requestID = m_client.request(METHOD_TAXONOMY_GETTREE, 1);
-    m_requests.insert(requestID, METHOD_TAXONOMY_GETTREE);
+    requestListMutex.lock();
+    m_requests.insert(requestID, method);
+    requestListMutex.unlock();
 }
 
 void Connector::processResponse(int id, QVariant responce)
 {
-    QMap<int, QString>::Iterator it = m_requests.find(id);
-    QMap<QString , QVariant> elements(responce.toMap());
+    QMap<int, QString>::Iterator it;
+    Connector::Signal signal = 0;
+    QString method = "";
 
+    requestListMutex.lock();
+    if(m_requests.size() < 1) {
+        requestListMutex.unlock();
+        qDebug() << "network request has been deleted from queue before reply was received";
+        return;
+    }
 
-     qDebug() << "responce:" << responce;
+    it = m_requests.find(id);
 
     if(it != m_requests.end()) {
-        if(it.value() == METHOD_USER_LOGIN) {
-            QString cookie = elements.value("session_name").toString();
-            cookie.append("=");
-            cookie.append(elements.value("sessid").toString());
-
-            m_client.setCookie(cookie);
-            m_isLogged = true;
-
-             getPointers();
-            // get pointers tree
-        }else if(it.value() == METHOD_SYSTEM_CONNECT) {
-            m_isConnected = true;
-        }else if(it.value() == METHOD_TAXONOMY_GETTREE) {
-
-        }
-
+        method = it.value();
+        signal = parseReplyData(method, &responce);
         m_requests.remove(id);
     }
+
+    requestListMutex.unlock();
+
+    // Process send post requests
+    if(!method.isEmpty() && signal)
+        sendPostRequest(method);
+
+    if(signal != 0) {
+        emit (this->*signal)();
+    }
+}
+
+void Connector::sendPostRequest(const QString& method)
+{
+    int requestID;
+
+    if(method == METHOD_USER_LOGIN) {
+        requestID = m_client.request(METHOD_TAXONOMY_GETTREE, 6);
+        addRequest(requestID, METHOD_TAXONOMY_GETTREE);
+    }
+}
+
+Connector::Signal Connector::parseReplyData(const QString& method, QVariant *resp)
+{
+
+    if(method == METHOD_USER_LOGIN) {
+        QMap<QString , QVariant> elements(resp->toMap());
+        QString cookie = elements.value("session_name").toString();
+        cookie.append("=");
+        cookie.append(elements.value("sessid").toString());
+
+        m_client.setCookie(cookie);
+        m_isLogged = true;
+
+        return &Connector::logInFinished;
+    }else if(method == METHOD_SYSTEM_CONNECT) {
+        m_isConnected = true;
+    }else if(method == METHOD_TAXONOMY_GETTREE) {
+        if(m_pointers.initFromRPC(resp))
+            return &Connector::pointersLoaded;
+    }
+
+    return 0;
 }
 
 void Connector::failed(int requestId, int faultCode, QString faultString)

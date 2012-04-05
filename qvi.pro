@@ -38,4 +38,5 @@ HEADERS += mainwindow.h \
     qxmlrpc/xmlrpc/client.h
 FORMS += mainwindow.ui
 RESOURCES += resource.qrc
+DEFINES += XMLRPC_DEBUG
 QT += core gui network xml
