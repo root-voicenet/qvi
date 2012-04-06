@@ -40,6 +40,7 @@ public:
 private:
     Ui::MainWindowClass *ui;
 
+
 private slots:
     void on_actionRotate_Counter_Clockwise_triggered();
     void on_actionRotate_Clockwise_triggered();
@@ -59,6 +60,8 @@ private slots:
     void setupProgressDialog(int);
     void updateProgressDialog();
     void pointerLoaded();
+    void userLogin();
+    void uploadImages();
 };
 
 #endif // MAINWINDOW_H

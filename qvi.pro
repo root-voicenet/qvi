@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     qxmlrpc/xmlrpc/server.cpp \
     qxmlrpc/xmlrpc/response.cpp \
     qxmlrpc/xmlrpc/request.cpp \
-    qxmlrpc/xmlrpc/client.cpp
+    qxmlrpc/xmlrpc/client.cpp \
+    logindialog.cpp
 HEADERS += mainwindow.h \
     qimagelabel.h \
     mylistview.h \
@@ -35,8 +36,10 @@ HEADERS += mainwindow.h \
     qxmlrpc/xmlrpc/response.h \
     qxmlrpc/xmlrpc/request.h \
     qxmlrpc/xmlrpc/qxmlrpc_documentation.h \
-    qxmlrpc/xmlrpc/client.h
-FORMS += mainwindow.ui
+    qxmlrpc/xmlrpc/client.h \
+    logindialog.h
+FORMS += mainwindow.ui \
+    logindialog.ui
 RESOURCES += resource.qrc
 DEFINES += XMLRPC_DEBUG
 QT += core gui network xml

@@ -180,7 +180,7 @@ int Client::request( QList<Variant> params, QString methodName )
     header.setContentLength( data.size() );
     header.setContentType("text/xml");
     header.setValue( "User-Agent", d->userAgent );
-    header.setValue( "Connection", "Keep-Alive");
+    //header.setValue( "Connection", "Keep-Alive");
 
 
     if ( !d->userName.isEmpty() ) {
@@ -200,10 +200,12 @@ int Client::request( QList<Variant> params, QString methodName )
 
     //d->http->setHost( d->hostName, d->port );
 
+
     int id = d->http->request( header, data, outBuffer );
     d->serverResponses[id] = outBuffer;
     d->methodNames[id] = methodName;
-    d->http->close();
+
+
 
 #ifdef XMLRPC_DEBUG
     qDebug() << "xmlrpc request(" << id << "): " << methodName;

@@ -15,6 +15,7 @@ public:
     ~Connector();
 
     void Login(const QString& username, const QString& password);
+    void UploadFile(const QByteArray *postData, const QString &description, QList<int>& pointer_tids);
 
     PointerModel& getPointers() { return m_pointers; }
 private:
@@ -38,8 +39,8 @@ private:
     static const QString METHOD_USER_LOGOUT;
     static const QString METHOD_USER_LOGIN;
     static const QString METHOD_USER_CREATE;
-    static const QString METHOD_FILE_SAVE;
     static const QString METHOD_TAXONOMY_GETTREE;
+    static const QString METHOD_FILE_UPLOAD;
 
 
 signals:
@@ -51,10 +52,13 @@ signals:
 
     /* Indicates photo upload request was sent and a reply received.
         For status check use isPhotoUploadSuccessful() */
-    void photoUploadFinished();
+    void fileUploadFinished();
 
+
+    void loginNeeded();
 
 public slots:
+
     void processResponse(int id, QVariant responce);
     void failed( int requestId, int faultCode, QString faultString );
 };

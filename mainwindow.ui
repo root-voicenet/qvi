@@ -201,7 +201,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="uploadButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Upload</string>
         </property>
@@ -253,7 +256,7 @@
             <x>0</x>
             <y>0</y>
             <width>288</width>
-            <height>474</height>
+            <height>486</height>
            </rect>
           </property>
           <property name="sizePolicy">
@@ -321,7 +324,7 @@
      <x>0</x>
      <y>0</y>
      <width>574</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

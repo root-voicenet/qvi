@@ -4,6 +4,7 @@
 #include "QResizeEvent"
 #include "qmessagebox.h"
 #include "loadfolderthread.h"
+#include "logindialog.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -16,16 +17,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->listView->setModel(&imageListModel);
 
 
-    QFile file(":/taxonomy.txt");
-    file.open(QIODevice::ReadOnly);
-    QString str = file.readAll();
-    pointerModel.init(str.split("\n"));
-    file.close();
-
 
     m_site = new Connector("http://test.irkipedia.ru/api");
     connect(m_site, SIGNAL(pointersLoaded()), this, SLOT(pointerLoaded()));
-    m_site->Login("admin", "alcd7c9");
+    //connect(m_site, SIGNAL(loginNeeded()), this, SLOT(userLogin()));
+
+    userLogin();
+
 
     ui->imageLabel->addMenuItem(ui->actionFit_to_screen);
     ui->imageLabel->addMenuItem(ui->actionFullscreen);
@@ -38,6 +36,22 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&loadFolderThread, SIGNAL( updateProgressDialog() ), this, SLOT( updateProgressDialog() ));
     connect(&loadFolderThread, SIGNAL( finished() ), this, SLOT( endOfFolderLoad() ));
     connect(&loadFolderThread, SIGNAL( addImageItem(QString) ), this, SLOT ( addImageItem(QString) ),Qt::QueuedConnection);
+    connect(ui->uploadButton, SIGNAL(clicked()), this, SLOT(uploadImages()));
+}
+
+void MainWindow::userLogin() {
+    do{
+        LoginDialog dialog(this);
+        if(dialog.exec()) {
+            QString login = dialog.getLogin();
+            QString password = dialog.getPassword();
+
+            if(!login.isEmpty() && !password.isEmpty()) {
+                m_site->Login(login, password);
+                break;
+            }
+        }
+    }while(true);
 }
 
 MainWindow::~MainWindow()
@@ -114,6 +128,7 @@ void MainWindow::endOfFolderLoad()
     this->imageName = loadFolderThread.imageName;
     progress.setValue(imageList.size());
 
+    ui->uploadButton->setEnabled(true);
     draw();
 }
 
@@ -122,6 +137,7 @@ void MainWindow::addImageItem(QString imagename)
 {
         QStandardItem *imageItem = new QStandardItem();
         imageItem->setIcon(QIcon(QPixmap(imagename)));
+        imageItem->setData(imagename);
         imageListModel.appendRow(imageItem);
 }
 
@@ -238,3 +254,26 @@ void MainWindow::pointerLoaded()
 {
     ui->pointer->setModel(&(m_site->getPointers()));
 }
+
+void MainWindow::uploadImages()
+{
+    QString description = "hello";
+    PointerModel* model = dynamic_cast<PointerModel*>(ui->pointer->model());
+    if(model) {
+        QList<int> tids = model->getSelectedPointers();
+
+        for(int i = 0; i < imageListModel.rowCount(); i++) {
+            QString filePath = imageListModel.item(i)->data().toString();
+            QFile f(filePath, this);
+            if(!f.open(QIODevice::ReadOnly)){
+                qDebug()<<"error opening file "<<filePath;
+                continue;
+            }
+
+            m_site->UploadFile(&f.readAll(), description, tids);
+            f.close();
+       }
+    }
+}
+
+
